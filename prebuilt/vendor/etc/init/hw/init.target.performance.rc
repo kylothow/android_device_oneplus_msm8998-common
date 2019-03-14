@@ -125,6 +125,7 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/max_freq_hysteresis 79000
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 300000
     write /sys/devices/system/cpu/cpu0/cpufreq/interactive/ignore_hispeed_on_notif 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/interactive/enable_prediction 1
 
     # online big cluster
     write /sys/devices/system/cpu/cpu4/online 1
@@ -139,9 +140,10 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/io_is_busy 1
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/target_loads "83 1939200:90 2016000:95"
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/min_sample_time 19000
-    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 79000
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/max_freq_hysteresis 59000
     write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 300000
     write /sys/devices/system/cpu/cpu4/cpufreq/interactive/ignore_hispeed_on_notif 1
+    write /sys/devices/system/cpu/cpu4/cpufreq/interactive/enable_prediction 1
 
     # Core Control
     write /sys/devices/system/cpu/cpu4/core_ctl/min_cpus 0
@@ -156,8 +158,10 @@ on property:sys.boot_completed=1
     write /sys/module/msm_thermal/core_control/enabled 1
 
     # Enable input boost configuration
-    write /sys/module/cpu_boost/parameters/input_boost_freq "0:1324800"
-    write /sys/module/cpu_boost/parameters/input_boost_ms 40
+    write /sys/module/cpu_boost/parameters/input_boost_freq "1248000 1344000"
+    write /sys/module/cpu_boost/parameters/input_boost_ms 90
+    write /sys/module/cpu_boost/parameters/input_boost_freq_s2 "1171200 1190400"
+    write /sys/module/cpu_boost/parameters/input_boost_ms_s2 150
 
     # Enable bus-dcvs
     write /sys/class/devfreq/soc:qcom,cpubw/governor "bw_hwmon"
