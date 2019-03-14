@@ -1,4 +1,16 @@
 on init
+    # Boot time fs tune
+    write /sys/block/sda/queue/iostats 0
+    write /sys/block/sda/queue/scheduler cfq
+    write /sys/block/sda/queue/iosched/slice_idle 0
+    write /sys/block/sda/queue/read_ahead_kb 2048
+    write /sys/block/sda/queue/nr_requests 256
+    write /sys/block/sde/queue/iostats 0
+    write /sys/block/sde/queue/scheduler cfq
+    write /sys/block/sde/queue/iosched/slice_idle 0
+    write /sys/block/sde/queue/read_ahead_kb 2048
+    write /sys/block/sde/queue/nr_requests 256
+
     # Disable UFS powersaving
     write /sys/devices/soc/1da4000.ufshc/clkscale_enable 0
     write /sys/devices/soc/1da4000.ufshc/clkgate_enable 0
@@ -33,33 +45,10 @@ on boot
     write /dev/cpuset/background/cpus 0-7
     write /dev/cpuset/system-background/cpus 0-7
 
-    # Set I/O Scheduler tweaks
-    write /sys/block/sda/queue/scheduler maple
-    write /sys/block/sda/queue/read_ahead_kb 512
-    write /sys/block/sda/queue/iosched/writes_starved 4
-    write /sys/block/sda/queue/iosched/fifo_batch 16
-    write /sys/block/sda/queue/iosched/sync_read_expire 350
-    write /sys/block/sda/queue/iosched/sync_write_expire 550
-    write /sys/block/sda/queue/iosched/async_read_expire 250
-    write /sys/block/sda/queue/iosched/async_write_expire 450
-    write /sys/block/sda/queue/iosched/sleep_latency_multiple 10
-    write /sys/block/sde/queue/scheduler maple
-    write /sys/block/sde/queue/read_ahead_kb 512
-    write /sys/block/sde/queue/iosched/writes_starved 4
-    write /sys/block/sde/queue/iosched/fifo_batch 16
-    write /sys/block/sde/queue/iosched/sync_read_expire 350
-    write /sys/block/sde/queue/iosched/sync_write_expire 550
-    write /sys/block/sde/queue/iosched/async_read_expire 250
-    write /sys/block/sde/queue/iosched/async_write_expire 450
-    write /sys/block/sde/queue/iosched/sleep_latency_multiple 10
-
     # Sound settings
     write /sys/kernel/sound_control/earpiece_gain 10
     write /sys/kernel/sound_control/mic_gain 10
     write /sys/kernel/sound_control/headphone_gain "10 10"
-
-    # Don't treat storage as rotational
-    write /sys/block/sda/queue/rotational 0
 
 on charger
     # Enable UFS powersaving
@@ -85,23 +74,16 @@ on charger
     write /sys/devices/system/cpu/cpu6/online 0
     write /sys/devices/system/cpu/cpu7/online 0
 
-on late-fs
-    # Enable boot time fs tuning (ro like system is on sda, rw like userdata is on sde)
-    write /sys/block/sda/queue/iostats 0
-    write /sys/block/sda/queue/nr_requests 256
-    write /sys/block/sda/queue/read_ahead_kb 2048
-    write /sys/block/sde/queue/iostats 0
-    write /sys/block/sde/queue/nr_requests 256
-    write /sys/block/sda/queue/read_ahead_kb 2048
-
 on property:sys.boot_completed=1
-    # Disable boot time fs tuning
-    write /sys/block/sde/queue/read_ahead_kb 1024
-    write /sys/block/sde/queue/nr_requests 128
-    write /sys/block/sde/queue/iostats 1
-    write /sys/block/sda/queue/read_ahead_kb 1024
+    # Runtime fs tuning: as we have init boottime setting and kernel patch setting
+    # default readahead to 2048KB. We should adjust the setting upon boot_complete
+    # for runtime performance
+    write /sys/block/sda/queue/read_ahead_kb 128
     write /sys/block/sda/queue/nr_requests 128
     write /sys/block/sda/queue/iostats 1
+    write /sys/block/sde/queue/read_ahead_kb 128
+    write /sys/block/sde/queue/nr_requests 128
+    write /sys/block/sde/queue/iostats 1
 
     # Enable UFS powersaving
     write /sys/devices/soc/1da4000.ufshc/clkscale_enable 1
