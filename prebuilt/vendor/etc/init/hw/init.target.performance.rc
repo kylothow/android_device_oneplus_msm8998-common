@@ -107,6 +107,14 @@ on property:sys.boot_completed=1
     # Set the default IRQ affinity to the silver cluster.
     write /proc/irq/default_smp_affinity f
 
+    # Enable UFS powersaving
+    write /sys/devices/soc/1da4000.ufshc/clkscale_enable 1
+    write /sys/devices/soc/1da4000.ufshc/clkgate_enable 1
+    write /sys/devices/soc/1da4000.ufshc/hibern8_on_idle_enable 1
+
+    # Enable powersaving
+    write /sys/module/lpm_levels/parameters/sleep_disabled 0
+
     # Runtime fs tuning: as we have init boottime setting and kernel patch setting
     # default readahead to 2048KB. We should adjust the setting upon boot_complete
     # for runtime performance
@@ -119,11 +127,6 @@ on property:sys.boot_completed=1
 
     # Disable sched_boost
     write /proc/sys/kernel/sched_boost 0
-
-    # Enable UFS powersaving
-    write /sys/devices/soc/1da4000.ufshc/clkscale_enable 1
-    write /sys/devices/soc/1da4000.ufshc/clkgate_enable 1
-    write /sys/devices/soc/1da4000.ufshc/hibern8_on_idle_enable 1
 
     # disable thermal core control until CPU is configured
     write /sys/module/msm_thermal/core_control/enabled 0
@@ -209,23 +212,12 @@ on property:sys.boot_completed=1
 
     write /sys/class/devfreq/soc:qcom,mincpubw/governor "cpufreq"
 
-    # Enable UFS powersaving
-    write /sys/devices/soc/1da4000.ufshc/clkscale_enable 1
-    write /sys/devices/soc/1da4000.ufshc/clkgate_enable 1
-    write /sys/devices/soc/1da4000.ufshc/hibern8_on_idle_enable 1
-
-    # Enable powersaving
-    write /sys/module/lpm_levels/parameters/sleep_disabled 0
-
     # Setup cpusets
     write /dev/cpuset/top-app/cpus 0-7
     write /dev/cpuset/foreground/cpus 0-3,6-7
     write /dev/cpuset/background/cpus 0-1
     write /dev/cpuset/system-background/cpus 0-3
     write /dev/cpuset/camera-daemon/cpus 0-3
-
-    # Disable sched boost
-    write /proc/sys/kernel/sched_boost 0
 
     # Enable Adaptive LMK
     write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
